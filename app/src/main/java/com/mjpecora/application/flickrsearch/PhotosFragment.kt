@@ -70,7 +70,7 @@ class PhotosFragment : Fragment() {
         super.onStart()
         search_iv?.setOnClickListener {
             if (!search_et?.text.isNullOrEmpty()) {
-                (activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(view?.windowToken)
+                (activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(view?.windowToken, 0)
                 initViewModel(search_et.text.toString())
                 initState()
                 subscribeUi()
