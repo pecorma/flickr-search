@@ -55,7 +55,7 @@ class FlickrDataSource(
                     { response ->
                         updateState(State.DONE)
                         response?.photos?.photo?.let {
-                            callback.onResult(it, null, 2)
+                            callback.onResult(it, null, INITIAL_PAGE + 1)
                         } ?: updateState(State.ERROR)
                     },
                     {
