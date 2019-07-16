@@ -1,6 +1,5 @@
 package com.mjpecora.application.flickrsearch.adapters
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -50,8 +49,8 @@ class PhotosAdapter(private val retry: () -> Unit) : PagedListAdapter<Photo, Rec
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ITEM -> PhotosViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_photo, null))
-            else -> LoadingViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_loading, null))
+            ITEM -> PhotosViewHolder(View.inflate(parent.context, R.layout.item_photo, null))
+            else -> LoadingViewHolder(View.inflate(parent.context, R.layout.item_loading, null))
         }
     }
 
@@ -78,7 +77,10 @@ class PhotosAdapter(private val retry: () -> Unit) : PagedListAdapter<Photo, Rec
     inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindView(state: State) {
             when (state) {
-                State.ERROR -> itemView.error_lottie?.visibility = View.VISIBLE
+                State.ERROR -> itemView.error_lottie?.run {
+                    visibility = View.VISIBLE
+                    setOnClickListener { retry.invoke() }
+                }
                 else-> itemView.loading_lottie?.visibility = View.VISIBLE
             }
         }
