@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DarkTheme" parent="Theme.MaterialComponents.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/darkPrimary</item>
+        <item name="colorPrimaryDark">@color/darkPrimaryVariant</item>
+        <item name="colorAccent">@color/darkSecondary</item>
+
+        <item name="android:textColorPrimary">@color/darkOnBackground</item>
+        <item name="android:textColorSecondary">@color/darkOnPrimary</item>
+    </style>
+</resources>

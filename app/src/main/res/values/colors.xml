@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    // dark theme
+    <color name="darkPrimary">#BB86FC</color>
+    <color name="darkPrimaryVariant">#3700B3</color>
+    <color name="darkSecondary">#03DAC6</color>
+    <color name="darkBackground">#121212</color>
+    <color name="darkError">#CF6679</color>
+    <color name="darkOnBackground">#FFFFFF</color>
+    <color name="darkOnError">#000000</color>
+    <color name="darkOnPrimary">#000000</color>
+    <color name="darkOnSecondary">#000000</color>
+    <color name="darkLightGrey">#eeeeee</color>
+</resources>
