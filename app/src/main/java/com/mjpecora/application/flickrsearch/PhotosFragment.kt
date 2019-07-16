@@ -1,29 +1,26 @@
 package com.mjpecora.application.flickrsearch
 
+import android.app.Activity
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mjpecora.application.flickrsearch.adapters.PaginationScrollListener
 import com.mjpecora.application.flickrsearch.adapters.PhotosAdapter
 import com.mjpecora.application.flickrsearch.databinding.FragmentPhotosBinding
-import com.mjpecora.application.flickrsearch.viewmodels.PhotoViewModelFactory
 import com.mjpecora.application.flickrsearch.viewmodels.PhotosViewModel
+import kotlinx.android.synthetic.main.layout_search_bar.*
 
 class PhotosFragment : Fragment() {
 
-    private var currentPage = 1
-    private var isLastPage = false
+    private val adapter: PhotosAdapter by lazy { PhotosAdapter{ vm?.retry() } }
 
-    private val adapter: PhotosAdapter by lazy { PhotosAdapter() }
-
-    private val vm: PhotosViewModel by viewModels { PhotoViewModelFactory() }
+    private var vm: PhotosViewModel? = null
 
     private val itemDecoration: RecyclerView.ItemDecoration by lazy {
         object : RecyclerView.ItemDecoration() {
@@ -61,39 +58,36 @@ class PhotosFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentPhotosBinding.inflate(inflater, container, false)
-        val layoutManager = GridLayoutManager(context, 2)
-        binding.swipeRefresh?.setOnRefreshListener {
-
-        }
         binding.photosRv?.run {
-            this.layoutManager = layoutManager
+            this.adapter = this@PhotosFragment.adapter
+            this.layoutManager =  GridLayoutManager(context, 2)
             addItemDecoration(itemDecoration)
-            this.adapter = adapter
-            addOnScrollListener( object : PaginationScrollListener(layoutManager) {
-                override fun isLastPage(): Boolean {
-
-                }
-
-                override fun isLoading(): Boolean {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun loadMoreItems() {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-            })
         }
-        subscribeUi(adapter)
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        //search_et?.text?.toString()?.let { vm.fetchPhotos(it) }
+        search_iv?.setOnClickListener {
+            if (!search_et?.text.isNullOrEmpty()) {
+                (activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.hideSoftInputFromWindow(view?.windowToken)
+                initViewModel(search_et.text.toString())
+                initState()
+                subscribeUi()
+            }
+        }
     }
 
-    private fun subscribeUi(adapter: PhotosAdapter) {
-        vm.photosLiveData.observe(this, Observer { adapter.submitList(it) })
+    private fun initViewModel(input: String) {
+       vm = PhotosViewModel(input)
+    }
+
+    private fun initState() {
+        vm?.getState()?.observe(this, Observer { state -> adapter.setState(state) })
+    }
+
+    private fun subscribeUi() {
+        vm?.photosList?.observe(this, Observer { adapter.submitList(it) })
     }
 
 }

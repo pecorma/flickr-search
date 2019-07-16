@@ -6,7 +6,7 @@ import java.io.IOException
 
 interface BaseRepository {
 
-    suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>, errorMessage: String): T? {
+    fun <T : Any> safeApiCall(call: () -> Response<T>, errorMessage: String): T? {
         return when(val result : Output<T> = safeApiResult(call,errorMessage)) {
             is Output.Success ->
                 result.data
@@ -17,7 +17,7 @@ interface BaseRepository {
         }
     }
 
-    private suspend fun <T: Any> safeApiResult(call: suspend ()-> Response<T>, errorMessage: String) : Output<T>{
+    private fun <T: Any> safeApiResult(call: ()-> Response<T>, errorMessage: String) : Output<T>{
         val response = call.invoke()
         if (response.isSuccessful)
             return Output.Success(response.body()!!)

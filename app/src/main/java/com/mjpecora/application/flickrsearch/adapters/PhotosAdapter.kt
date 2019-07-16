@@ -3,32 +3,47 @@ package com.mjpecora.application.flickrsearch.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.mjpecora.application.flickrsearch.R
 import com.mjpecora.application.flickrsearch.model.Photo
+import com.mjpecora.application.flickrsearch.model.State
+import kotlinx.android.synthetic.main.item_loading.view.*
 import kotlinx.android.synthetic.main.item_photo.view.*
 
-class PhotosAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PhotosAdapter(private val retry: () -> Unit) : PagedListAdapter<Photo, RecyclerView.ViewHolder>(
+        object : DiffUtil.ItemCallback<Photo>() {
+            override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+                return oldItem.id == newItem.id
+            }
+        }
+) {
 
     companion object {
         private const val LOADING = 0
         private const val ITEM = 1
     }
 
-    private var list: List<Photo>? = null
-    private var isLoading: Boolean = true
+    private var state = State.LOADING
 
-    override fun getItemCount(): Int = list?.size ?: 1
+    override fun getItemCount(): Int = super.getItemCount() + if (hasLoading()) 1 else 0
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        list?.get(position)?.let { (holder as PhotosViewHolder).bindView(it) }
+        if (getItemViewType(position) == ITEM)
+            getItem(position)?.let { (holder as PhotosViewHolder).bindView(it) }
+        else (holder as LoadingViewHolder).bindView(state)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (isLoading) {
-            true -> LOADING
+        return when (position < super.getItemCount()) {
+            false -> LOADING
             else -> ITEM
         }
     }
@@ -40,9 +55,13 @@ class PhotosAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    fun submitList(list: List<Photo>) {
-        this.list = list
+    fun setState(state: State) {
+        this.state = state
+        notifyItemChanged(super.getItemCount())
     }
+
+    private fun hasLoading(): Boolean =
+        super.getItemCount() != 0 && (state == State.LOADING || state == State.ERROR)
 
     inner class PhotosViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindView(item: Photo) {
@@ -56,6 +75,13 @@ class PhotosAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bindView(state: State) {
+            when (state) {
+                State.ERROR -> itemView.error_lottie?.visibility = View.VISIBLE
+                else-> itemView.loading_lottie?.visibility = View.VISIBLE
+            }
+        }
+    }
 
 }

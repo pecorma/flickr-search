@@ -1,7 +1,7 @@
 package com.mjpecora.application.flickrsearch.model
 
-data class PhotoResponse(
-    var page: Int = 1,
-    var pages: Int?,
-    var result: MutableList<Photo>?
+data class PhotoResponse(var photo: MutableList<Photo>?)
+
+data class Photos(
+    var photos: PhotoResponse
 )

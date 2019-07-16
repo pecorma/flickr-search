@@ -1,20 +1,18 @@
 package com.mjpecora.application.flickrsearch.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class Photo(
-    val id: String?,
-    val owner: String?,
-    val secret: String?,
-    val server: String?,
-    val farm: Int?,
-    val title: String?,
-    val isPublic: Int?,
-    val isFriend: Int?,
-    val isFamily: Int?,
-    @Json(name = "url_s") val url: String?,
-    @Json(name = "height_s") val height: Int?,
-    @Json(name = "width_s") val width: Int?
+    var id: String?,
+    var owner: String?,
+    var secret: String?,
+    var server: String?,
+    var farm: Int?,
+    var title: String?,
+    var isPublic: Int?,
+    var isFriend: Int?,
+    var isFamily: Int?,
+    @SerializedName("url_s") var url: String?,
+    @SerializedName("height_s") var height: Int?,
+    @SerializedName("width_s") var width: Int?
 )
